@@ -25,10 +25,29 @@ cd $configuredir
 
 product="OMI"
 fullproduct="Open Management Infrastructure"
-major=`cut -d. -f1 $root/VERSION`
-minor=`cut -d. -f2 $root/VERSION`
-revision=`cut -d. -f3 $root/VERSION`
-patch_level=0
+
+# MI_MAJOR and other items are dependent on a rational version number
+# As a result, if version file can't be found, consider it fatal and
+# don't generate a bogus one
+
+if [ ! -f ../../omi.version ]; then
+    echo "File omi.version is not found from superproject! Please use"
+    echo "the Build-OMI super-project to build the OMI package."
+    exit 1
+fi
+
+. ../../omi.version
+
+if [ -z "$OMI_BUILDVERSION_MAJOR" -o -z "$OMI_BUILDVERSION_MINOR" -o -z "$OMI_BUILDVERSION_PATCH" -o -z "$OMI_BUILDVERSION_BUILDNR" ]; then
+    echo "Unable to determine version from file omi.version!"
+    exit 1
+fi
+
+major=$OMI_BUILDVERSION_MAJOR
+minor=$OMI_BUILDVERSION_MINOR
+revision=$OMI_BUILDVERSION_PATCH
+patch_level=$OMI_BUILDVERSION_BUILDNR
+
 version="$major.$minor.$revision"
 version_with_release="$major.$minor.$revision-$patch_level"
 date=`date`
